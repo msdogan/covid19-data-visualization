@@ -33,12 +33,20 @@ countries = [
 				'Korea, South',
 				]
 
+# confirmed cases
 path = '/Users/msdogan/Documents/github/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
 confirmed_df = pd.read_csv(path)
 confirmed = pd.DataFrame(confirmed_df.T.ix[4:].values,columns=confirmed_df.T.ix[1],index=confirmed_df.T.index[4:])
 df2 = confirmed.T.groupby(['Country/Region']).sum().T
 confirmed_df = df2[countries]
 confirmed_df.index = pd.to_datetime(confirmed_df.index)
+
+# new confirmed cases
+confirmed_new_df = confirmed_df.copy()
+for i in range(len(confirmed_new_df.index)-1):
+	confirmed_new_df.ix[-(i+1)]=confirmed_new_df.ix[-(i+1)]-confirmed_new_df.ix[-(i+2)]
+
+# fatalities
 path = '/Users/msdogan/Documents/github/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
 death_df = pd.read_csv(path)
 death = pd.DataFrame(death_df.T.ix[4:].values,columns=death_df.T.ix[1],index=death_df.T.index[4:])
@@ -46,6 +54,7 @@ df2 = death.T.groupby(['Country/Region']).sum().T
 death_df = df2[countries]
 death_df.index = pd.to_datetime(death_df.index)
 
+# recovered
 path = '/Users/msdogan/Documents/github/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv'
 recovered_df = pd.read_csv(path)
 recovered = pd.DataFrame(recovered_df.T.ix[4:].values,columns=recovered_df.T.ix[1],index=recovered_df.T.index[4:])
@@ -117,6 +126,22 @@ plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=
 plt.gcf().text(0.375, 0.01, 'Data Source: '+source,fontsize=10,color='grey')
 plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
 plt.savefig('confirmed.png',transparent=False,dpi=400)
+plt.close(fig)
+
+# confirmed new cases plot
+fig = plt.figure(); ax = plt.gca()
+confirmed_new_df.plot(
+	# logy=True,
+	ax=ax,alpha=0.5,ylim=[1,30000],color=color,legend=False,linewidth=1)
+plt.title('Confirmed New COVID-19 Cases', loc='left', fontweight='bold',fontsize=18)
+ax.get_xaxis().tick_bottom()
+ax.get_yaxis().tick_left()
+for i,item in enumerate(confirmed_df.keys()):
+	plt.text(confirmed_new_df.index[-1],confirmed_new_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
+plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
+plt.gcf().text(0.375, 0.01, 'Data Source: '+source,fontsize=10,color='grey')
+plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
+plt.savefig('confirmed_new.png',transparent=False,dpi=400)
 plt.close(fig)
 
 # number of deaths plot
