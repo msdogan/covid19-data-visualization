@@ -22,7 +22,7 @@ countries = [
 				'Iran',
 				'Singapore',
 				'Switzerland',
-				# 'Australia',
+				'Australia',
 				'Norway',
 				'Finland',
 				'Sweden',
@@ -115,7 +115,7 @@ def animate(i):
 	return None
 
 anim = animation.FuncAnimation(fig, animate, frames=len(confirmed_df.keys()), interval=1200)
-anim.save('confirmed.gif', writer='imagemagick')
+anim.save('confirmed.gif', writer='imagemagick', dpi=400)
 
 # confirmed cases plot
 fig = plt.figure(); ax = plt.gca()
@@ -137,7 +137,7 @@ plt.close(fig)
 fig = plt.figure(); ax = plt.gca()
 confirmed_new_df.plot(
 	# logy=True,
-	ax=ax,alpha=0.5,ylim=[1,30000],color=color,legend=False,linewidth=1)
+	ax=ax,alpha=0.5,ylim=[1,35000],color=color,legend=False,linewidth=1)
 plt.title('Confirmed New COVID-19 Cases', loc='left', fontweight='bold',fontsize=18)
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
@@ -169,7 +169,7 @@ plt.close(fig)
 fig = plt.figure(); ax = plt.gca()
 death_new_df.plot(
 	# logy=True,
-	ax=ax,alpha=0.5,ylim=[1,1000],color=color,legend=False,linewidth=1)
+	ax=ax,alpha=0.5,ylim=[1,1500],color=color,legend=False,linewidth=1)
 plt.title('New COVID-19 Fatalities', loc='left', fontweight='bold',fontsize=18)
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
@@ -204,14 +204,14 @@ barPos_p = np.arange(sorted_idx_p.shape[0])
 sc = np.array(countries)
 
 fig = plt.figure(); ax = plt.gca()
-plt.barh(barPos_p, data[sorted_idx_p],alpha=0.9)
+plt.barh(barPos_p, data[sorted_idx_p],alpha=0.8)
 plt.yticks(barPos_p, sc[sorted_idx_p],fontsize='9')
 plt.title('COVID-19 Mortality Rate (%)', loc='left', fontweight='bold',fontsize=18)
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
 plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
 plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
-plt.xlim([0,12])
+plt.xlim([0,14])
 plt.xlabel('(# of Deaths / Confirmed Cases) * 100')
 plt.subplots_adjust(left=0.175, bottom=0.15, right=0.925, top=0.925)
 plt.savefig('death_rate.png',transparent=False,dpi=400)
