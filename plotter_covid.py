@@ -31,6 +31,7 @@ countries = [
 				'Denmark',
 				'Netherlands',
 				'Korea, South',
+				'Portugal',
 				]
 
 # confirmed cases
@@ -40,6 +41,7 @@ confirmed = pd.DataFrame(confirmed_df.T.ix[4:].values,columns=confirmed_df.T.ix[
 df2 = confirmed.T.groupby(['Country/Region']).sum().T
 confirmed_df = df2[countries]
 confirmed_df.index = pd.to_datetime(confirmed_df.index)
+# print(confirmed.keys().values) # print countries
 
 # new confirmed cases
 confirmed_new_df = confirmed_df.copy()
@@ -59,6 +61,12 @@ death_new_df = death_df.copy()
 for i in range(len(confirmed_new_df.index)-1):
 	death_new_df.ix[-(i+1)]=death_new_df.ix[-(i+1)]-death_new_df.ix[-(i+2)]
 
+# death rate
+data = death_df.ix[-1]/confirmed_df.ix[-1]*100
+sorted_idx_p = np.argsort(data)
+barPos_p = np.arange(sorted_idx_p.shape[0])
+sc = np.array(countries)
+
 # recovered
 path = '/Users/msdogan/Documents/github/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv'
 recovered_df = pd.read_csv(path)
@@ -70,26 +78,26 @@ recovered_df.index = pd.to_datetime(recovered_df.index)
 color = sns.color_palette("dark", len(countries))
 
 # confirmed trend
-fig = plt.figure(); ax = plt.gca()
+fig = plt.figure(figsize=(5,4)); ax = plt.gca()
 for k,item in enumerate(confirmed_df.keys()):
 	df_plot = confirmed_df[confirmed_df[item] >= 100]
 	plt.plot(np.arange(0,len(df_plot[item])),df_plot[item],color=color[k],alpha=0.5,linewidth=1,label=item)
-	plt.text(len(df_plot[item])-1,df_plot[item].iloc[-1],item,fontsize=10,color=color[k],alpha=0.9,fontweight='bold')
+	plt.text(len(df_plot[item])-1,df_plot[item].iloc[-1],item,fontsize=10,color=color[k],alpha=0.6,fontweight='bold')
 ax.set_yscale('log')
 plt.title('Total Confirmed COVID-19 Cases', loc='left', fontweight='bold',fontsize=18)
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
 plt.xlabel('Days since Confirmed Cases Reached 100',fontsize=12)
-plt.ylim([100,300000])
-plt.xlim([0,75])
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
+plt.ylim([100,400000])
+plt.xlim([0,80])
+plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=8,color='grey')
+plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=8,color='grey')
 plt.subplots_adjust(left=0.1, bottom=0.15, right=0.95, top=0.925)
 plt.savefig('confirmed_trend.png',transparent=False,dpi=400)
 plt.close(fig)
 
 # confirmed trend
-fig = plt.figure(figsize=(6,5))
+fig = plt.figure(figsize=(5,4))
 ax = fig.gca()
 
 def animate(i):
@@ -106,113 +114,83 @@ def animate(i):
 	ax.get_xaxis().tick_bottom()
 	ax.get_yaxis().tick_left()
 	plt.xlabel('Days since Confirmed Cases Reached 100',fontsize=12)
-	plt.ylim([100,300000])
+	plt.ylim([100,400000])
 	plt.legend(loc=2)
 	plt.xlim([0,len(df_plot_italy['Italy'])])
-	plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-	plt.gcf().text(0.3, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
+	plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=8,color='grey')
+	plt.gcf().text(0.3, 0.01, 'Data Source: JHU, '+source,fontsize=8,color='grey')
 	plt.subplots_adjust(left=0.1, bottom=0.15, right=0.95, top=0.925)
 	return None
 
 anim = animation.FuncAnimation(fig, animate, frames=len(confirmed_df.keys()), interval=1200)
 anim.save('confirmed.gif', writer='imagemagick', dpi=400)
 
-# confirmed cases plot
-fig = plt.figure(); ax = plt.gca()
-confirmed_df.plot(
-	logy=True,
-	ax=ax,alpha=0.5,ylim=[1,300000],color=color,legend=False,linewidth=1)
-plt.title('Total Confirmed COVID-19 Cases', loc='left', fontweight='bold',fontsize=18)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-for i,item in enumerate(confirmed_df.keys()):
-	plt.text(confirmed_df.index[-1],confirmed_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
-plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
-plt.savefig('confirmed.png',transparent=False,dpi=400)
-plt.close(fig)
+# all in one plot
+plt.figure(figsize=(12, 8))
 
-# confirmed new cases plot
-fig = plt.figure(); ax = plt.gca()
+ax1 = plt.subplot(231)
 confirmed_new_df.plot(
 	# logy=True,
-	ax=ax,alpha=0.5,ylim=[1,35000],color=color,legend=False,linewidth=1)
-plt.title('Confirmed New COVID-19 Cases', loc='left', fontweight='bold',fontsize=18)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
+	ax=ax1,alpha=0.5,ylim=[1,35000],xlim=[confirmed_new_df.index[0],confirmed_new_df.index[-1]],color=color,legend=False,linewidth=1)
+plt.title('Confirmed New COVID-19 Cases', loc='left', fontweight='bold',fontsize=11)
+ax1.get_xaxis().tick_bottom()
+ax1.get_yaxis().tick_left()
 for i,item in enumerate(confirmed_new_df.keys()):
 	plt.text(confirmed_new_df.index[-1],confirmed_new_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
-plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
-plt.savefig('confirmed_new.png',transparent=False,dpi=400)
-plt.close(fig)
 
-# number of deaths plot
-fig = plt.figure(); ax = plt.gca()
-death_df.plot(
+ax2 = plt.subplot(232)
+confirmed_df.plot(
 	logy=True,
-	ax=ax,alpha=0.5,ylim=[1,20000],xlim=[death_df.index[0],death_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Total Number of COVID-19 Deaths', loc='left', fontweight='bold',fontsize=18)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-for i,item in enumerate(death_df.keys()):
-	plt.text(death_df.index[-1],death_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
-plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
-plt.savefig('death.png',transparent=False,dpi=400)
-plt.close(fig)
+	ax=ax2,alpha=0.5,ylim=[1,400000],xlim=[confirmed_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
+plt.title('Total Confirmed COVID-19 Cases', loc='left', fontweight='bold',fontsize=11)
+ax2.get_xaxis().tick_bottom()
+ax2.get_yaxis().tick_left()
+for i,item in enumerate(confirmed_df.keys()):
+	plt.text(confirmed_df.index[-1],confirmed_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
 
-# new death plot
-fig = plt.figure(); ax = plt.gca()
+ax3 = plt.subplot(233)
 death_new_df.plot(
 	# logy=True,
-	ax=ax,alpha=0.5,ylim=[1,1500],color=color,legend=False,linewidth=1)
-plt.title('New COVID-19 Fatalities', loc='left', fontweight='bold',fontsize=18)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
+	ax=ax3,alpha=0.5,ylim=[1,1400],xlim=[death_new_df.index[0],death_new_df.index[-1]],color=color,legend=False,linewidth=1)
+plt.title('New COVID-19 Fatalities', loc='left', fontweight='bold',fontsize=11)
+ax3.get_xaxis().tick_bottom()
+ax3.get_yaxis().tick_left()
 for i,item in enumerate(death_new_df.keys()):
 	plt.text(death_new_df.index[-1],death_new_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
-plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
-plt.savefig('death_new.png',transparent=False,dpi=400)
-plt.close(fig)
 
-# recovered plot
-fig = plt.figure(); ax = plt.gca()
-recovered_df.plot(
-	logy=True,
-	ax=ax,alpha=0.5,ylim=[1,100000],xlim=[recovered_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Total Recovered COVID-19 Patients', loc='left', fontweight='bold',fontsize=18)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-for i,item in enumerate(recovered_df.keys()):
-	plt.text(recovered_df.index[-1],recovered_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
-plt.subplots_adjust(left=0.125, bottom=0.175, right=0.85, top=0.925)
-plt.savefig('recovered.png',transparent=False,dpi=400)
-plt.close(fig)
-
-# death rate
-data = death_df.ix[-1]/confirmed_df.ix[-1]*100
-sorted_idx_p = np.argsort(data)
-barPos_p = np.arange(sorted_idx_p.shape[0])
-sc = np.array(countries)
-
-fig = plt.figure(); ax = plt.gca()
-plt.barh(barPos_p, data[sorted_idx_p],alpha=0.8)
-plt.yticks(barPos_p, sc[sorted_idx_p],fontsize='9')
-plt.title('COVID-19 Mortality Rate (%)', loc='left', fontweight='bold',fontsize=18)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=10,color='grey')
-plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=10,color='grey')
+ax4 = plt.subplot(234)
+plt.barh(barPos_p, data[sorted_idx_p],alpha=0.9)
+plt.yticks(barPos_p, sc[sorted_idx_p])
+plt.title('COVID-19 Mortality Rate (%)', loc='left', fontweight='bold',fontsize=11)
+ax4.get_xaxis().tick_bottom()
+ax4.get_yaxis().tick_left()
 plt.xlim([0,14])
 plt.xlabel('(# of Deaths / Confirmed Cases) * 100')
-plt.subplots_adjust(left=0.175, bottom=0.15, right=0.925, top=0.925)
-plt.savefig('death_rate.png',transparent=False,dpi=400)
+
+ax5 = plt.subplot(235)
+death_df.plot(
+	logy=True,
+	ax=ax5,alpha=0.5,ylim=[1,20000],xlim=[death_df.index[0],death_df.index[-1]],color=color,legend=False,linewidth=1)
+plt.title('Total Number of COVID-19 Deaths', loc='left', fontweight='bold',fontsize=11)
+ax5.get_xaxis().tick_bottom()
+ax5.get_yaxis().tick_left()
+for i,item in enumerate(death_df.keys()):
+	plt.text(death_df.index[-1],death_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
+
+ax6 = plt.subplot(236)
+recovered_df.plot(
+	logy=True,
+	ax=ax6,alpha=0.5,ylim=[1,100000],xlim=[recovered_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
+plt.title('Total Recovered COVID-19 Patients', loc='left', fontweight='bold',fontsize=11)
+ax6.get_xaxis().tick_bottom()
+ax6.get_yaxis().tick_left()
+for i,item in enumerate(recovered_df.keys()):
+	plt.text(recovered_df.index[-1],recovered_df[item].iloc[-1],item,fontsize=8,color=color[i],alpha=0.9)
+
+plt.legend(bbox_to_anchor=(1.2, 1.2, 1., .12), loc='center right', ncol=1)
+plt.subplots_adjust(left=0.1, bottom=0.15, right=0.8, top=0.925, wspace=0.6, hspace=0.4)
+plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=12,color='grey')
+plt.gcf().text(0.35, 0.01, 'Data Source: Johns Hopkins University, '+source,fontsize=12,color='grey')
+plt.savefig('total_plot.png',transparent=False,dpi=400)
 plt.close(fig)
+

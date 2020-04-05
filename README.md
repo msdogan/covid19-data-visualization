@@ -19,8 +19,8 @@
 
 ![confirmed_trend](confirmed.gif) 
 
- ## Mortality Rate (\%)
+ ## Case Plots (\%)
  
- Total number of deaths from COVID-19 divided by total confirmed cases
+ Series of plots monitoring COVID-19
 
-![mortality](death_rate.png) 
+![monitor](total_plot.png) 
