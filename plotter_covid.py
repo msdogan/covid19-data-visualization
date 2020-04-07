@@ -132,7 +132,7 @@ ax1 = plt.subplot(231)
 confirmed_new_df.plot(
 	# logy=True,
 	ax=ax1,alpha=0.5,ylim=[1,35000],xlim=[confirmed_new_df.index[0],confirmed_new_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Confirmed New COVID-19 Cases', loc='left', fontweight='bold',fontsize=11)
+plt.title('Confirmed Daily Cases', loc='left', fontweight='bold',fontsize=11)
 ax1.get_xaxis().tick_bottom()
 ax1.get_yaxis().tick_left()
 for i,item in enumerate(confirmed_new_df.keys()):
@@ -142,7 +142,7 @@ ax2 = plt.subplot(232)
 confirmed_df.plot(
 	logy=True,
 	ax=ax2,alpha=0.5,ylim=[1,400000],xlim=[confirmed_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Total Confirmed COVID-19 Cases', loc='left', fontweight='bold',fontsize=11)
+plt.title('Total Confirmed Cases', loc='left', fontweight='bold',fontsize=11)
 ax2.get_xaxis().tick_bottom()
 ax2.get_yaxis().tick_left()
 for i,item in enumerate(confirmed_df.keys()):
@@ -152,7 +152,7 @@ ax3 = plt.subplot(233)
 death_new_df.plot(
 	# logy=True,
 	ax=ax3,alpha=0.5,ylim=[1,1400],xlim=[death_new_df.index[0],death_new_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('New COVID-19 Fatalities', loc='left', fontweight='bold',fontsize=11)
+plt.title('Daily Fatalities', loc='left', fontweight='bold',fontsize=11)
 ax3.get_xaxis().tick_bottom()
 ax3.get_yaxis().tick_left()
 for i,item in enumerate(death_new_df.keys()):
@@ -161,17 +161,19 @@ for i,item in enumerate(death_new_df.keys()):
 ax4 = plt.subplot(234)
 plt.barh(barPos_p, data[sorted_idx_p],alpha=0.9)
 plt.yticks(barPos_p, sc[sorted_idx_p])
-plt.title('COVID-19 Mortality Rate (%)', loc='left', fontweight='bold',fontsize=11)
+plt.title('Mortality Rate (%)', loc='left', fontweight='bold',fontsize=11)
 ax4.get_xaxis().tick_bottom()
 ax4.get_yaxis().tick_left()
-plt.xlim([0,14])
+plt.xlim([0,15])
 plt.xlabel('(# of Deaths / Confirmed Cases) * 100')
+for i,item in enumerate(data[sorted_idx_p]):
+	plt.text(item,i,str(round(item,1)),verticalalignment='center',fontsize=8,color='gray')
 
 ax5 = plt.subplot(235)
 death_df.plot(
 	logy=True,
 	ax=ax5,alpha=0.5,ylim=[1,20000],xlim=[death_df.index[0],death_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Total Number of COVID-19 Deaths', loc='left', fontweight='bold',fontsize=11)
+plt.title('Total Number of Deaths', loc='left', fontweight='bold',fontsize=11)
 ax5.get_xaxis().tick_bottom()
 ax5.get_yaxis().tick_left()
 for i,item in enumerate(death_df.keys()):
@@ -181,7 +183,7 @@ ax6 = plt.subplot(236)
 recovered_df.plot(
 	logy=True,
 	ax=ax6,alpha=0.5,ylim=[1,100000],xlim=[recovered_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Total Recovered COVID-19 Patients', loc='left', fontweight='bold',fontsize=11)
+plt.title('Total Recovered Patients', loc='left', fontweight='bold',fontsize=11)
 ax6.get_xaxis().tick_bottom()
 ax6.get_yaxis().tick_left()
 for i,item in enumerate(recovered_df.keys()):

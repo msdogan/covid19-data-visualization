@@ -19,7 +19,7 @@
 
 ![confirmed_trend](confirmed.gif) 
 
- ## Case Plots (\%)
+ ## Case Plots
  
  Series of plots monitoring COVID-19
 
