@@ -88,8 +88,8 @@ plt.title('Total Confirmed COVID-19 Cases', loc='left', fontweight='bold',fontsi
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
 plt.xlabel('Days since Confirmed Cases Reached 100',fontsize=12)
-plt.ylim([100,400000])
-plt.xlim([0,80])
+plt.ylim([100,600000])
+plt.xlim([0,85])
 plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=8,color='grey')
 plt.gcf().text(0.325, 0.01, 'Data Source: JHU, '+source,fontsize=8,color='grey')
 plt.subplots_adjust(left=0.1, bottom=0.15, right=0.95, top=0.925)
@@ -114,9 +114,10 @@ def animate(i):
 	ax.get_xaxis().tick_bottom()
 	ax.get_yaxis().tick_left()
 	plt.xlabel('Days since Confirmed Cases Reached 100',fontsize=12)
-	plt.ylim([100,400000])
+	plt.ylim([100,600000])
 	plt.legend(loc=2)
-	plt.xlim([0,len(df_plot_italy['Italy'])])
+	# plt.xlim([0,len(df_plot_italy['Italy'])])
+	plt.xlim([0,None])
 	plt.gcf().text(0.01, 0.01, 'Last Updated: '+str(datetime.date.today()),fontsize=8,color='grey')
 	plt.gcf().text(0.3, 0.01, 'Data Source: JHU, '+source,fontsize=8,color='grey')
 	plt.subplots_adjust(left=0.1, bottom=0.15, right=0.95, top=0.925)
@@ -132,7 +133,7 @@ ax1 = plt.subplot(231)
 confirmed_new_df.plot(
 	# logy=True,
 	ax=ax1,alpha=0.5,ylim=[1,35000],xlim=[confirmed_new_df.index[0],confirmed_new_df.index[-1]],color=color,legend=False,linewidth=1)
-plt.title('Confirmed Daily Cases', loc='left', fontweight='bold',fontsize=11)
+plt.title('Daily Confirmed Cases', loc='left', fontweight='bold',fontsize=11)
 ax1.get_xaxis().tick_bottom()
 ax1.get_yaxis().tick_left()
 for i,item in enumerate(confirmed_new_df.keys()):
@@ -141,7 +142,7 @@ for i,item in enumerate(confirmed_new_df.keys()):
 ax2 = plt.subplot(232)
 confirmed_df.plot(
 	logy=True,
-	ax=ax2,alpha=0.5,ylim=[1,400000],xlim=[confirmed_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
+	ax=ax2,alpha=0.5,ylim=[1,600000],xlim=[confirmed_df.index[0],confirmed_df.index[-1]],color=color,legend=False,linewidth=1)
 plt.title('Total Confirmed Cases', loc='left', fontweight='bold',fontsize=11)
 ax2.get_xaxis().tick_bottom()
 ax2.get_yaxis().tick_left()
@@ -151,7 +152,7 @@ for i,item in enumerate(confirmed_df.keys()):
 ax3 = plt.subplot(233)
 death_new_df.plot(
 	# logy=True,
-	ax=ax3,alpha=0.5,ylim=[1,1400],xlim=[death_new_df.index[0],death_new_df.index[-1]],color=color,legend=False,linewidth=1)
+	ax=ax3,alpha=0.5,ylim=[1,2000],xlim=[death_new_df.index[0],death_new_df.index[-1]],color=color,legend=False,linewidth=1)
 plt.title('Daily Fatalities', loc='left', fontweight='bold',fontsize=11)
 ax3.get_xaxis().tick_bottom()
 ax3.get_yaxis().tick_left()
